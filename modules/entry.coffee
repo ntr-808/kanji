@@ -1,34 +1,124 @@
 $ ->
   list = $ '#words'
 
+  subject = $ "<div id='subject'></div>"
+  attempts = $ "<div id='attempts'></div>"
+  kana_entry = $ """<input id="kana_entry" placeholder="かな"/>"""
+  rj_entry = $ """<input id="rj_entry" placeholder="Meaning (Eng)"/>"""
+  rj_answer = $ "<div id='rj_answer'></div>"
+  kana_answer = $ "<div id='kana_answer'></div>"
+  rj_overlay = $ "<div id='rj_overlay'></div>"
+  kana_overlay = $ "<div id='kana_overlay'></div>"
+
+  # test = $ "<span id='test'>|</span>"
+
+  body = $ "body"
+
+  @tries = 0
+
+  @centre = (element, offset) =>
+    unless offset?
+      element.css "left", "#{($(window).width() / 2) - (element.width() / 2)}px"
+    else
+      console.log element.id, offset / 100
+      element.css "left", "#{($(window).width() * (offset / 100)) - (element.width() / 2)}px"
+
+  @reset = () =>
+    @word = words[keys[Math.floor(Math.random() * keys.length)]]
+    @tries = 0
+
+    attempts.fadeOut =>
+      attempts.empty()
+      attempts.show()
+
+    kana_answer.fadeOut =>
+      kana_answer.removeClass()
+      kana_answer.text @word.kana
+      @centre kana_answer, 25
+
+    rj_answer.fadeOut =>
+      rj_answer.removeClass()
+      rj_answer.text @word.meaning
+      @centre rj_answer, 75
+
+
+    kana_entry.val ''
+    rj_entry.val ''
+    subject.fadeOut =>
+      subject.removeClass()
+      subject.text @word.kanji
+      subject.fadeIn()
+      kana_entry.fadeIn()
+      rj_entry.fadeIn()
+      @centre subject
+
+    @centre kana_entry, 25
+    @centre rj_entry, 75
+    @centre attempts
+
+  @kana_correct = () =>
+    subject.addClass 'correct'
+    kana_answer.addClass 'correct'
+    kana_answer.fadeIn()
+    kana_entry.fadeOut()
+    @rj_correct()
+    setTimeout (=> @reset()), 1000
+
+  @rj_correct = () =>
+    rj_entry.fadeOut()
+    rj_answer.addClass 'correct'
+    rj_answer.fadeIn()
+
+  @wrong_input = (input) =>
+    @tries++
+    console.log @tries
+    wrong = $ "<div class='wrong'>#{input}</div>"
+    wrong.hide()
+    attempts.append wrong
+    wrong.fadeIn()
+    @centre attempts
+
+    if @tries is 3
+      subject.addClass 'wrong'
+      kana_answer.addClass 'wrong'
+      kana_answer.fadeIn()
+      kana_entry.fadeOut()
+      rj_entry.fadeOut()
+      rj_answer.addClass 'wrong'
+      rj_answer.fadeIn()
+      setTimeout (=> @reset()), 1000
+
+  @rj_correct = () =>
+    rj_entry.fadeOut()
+    rj_answer.addClass 'correct'
+    rj_answer.fadeIn()
+
   words =
     1:
-      kanji: "図書館", kana: "としょかん", meaning: "library"
+      kanji: "図書館", kana: "としょかん", meaning: "Library"
     2:
-      kanji: "仕事", kana: "しごと", meaning: "work"
+      kanji: "仕事", kana: "しごと", meaning: "Work"
+    3:
+      kanji: "行く", kana: "いく", meaning: 'To go'
     
-  for key, data of words
-    do (key, data) =>
-      word = $ "<div id=#{data.meaning}>言葉: #{data.kanji}</div>"
-      list.append word
-      kana_answer = $ """<input id="#{key}_answer_kana" placeholder="かな"/>"""
-      rj_answer = $ """<input id="#{key}_answer_rj" placeholder="Romaji"/>"""
+  keys = Object.keys words
 
-      kana_correct = () =>
-        kana_answer.replaceWith $ """<div class="correct">#{data.kana}</div>"""
-      meaning_correct = () =>
-        rj_answer.replaceWith $ """<div class="correct">#{data.meaning}</div>"""
+  body.append subject, kana_entry, rj_entry, kana_answer, rj_answer, attempts
+  subject.hide()
+  kana_answer.hide()
+  rj_answer.hide()
+  @reset()
 
-      kana_answer.change () =>
-        if kana_answer.val() is data.kana
-          kana_correct()
-          meaning_correct()
-          
-      rj_answer.change () =>      
-        if rj_answer.val() is data.meaning
-          kana_correct()
-          meaning_correct()
-          
-
-      list.append kana_answer
-      list.append rj_answer
+  kana_entry.change () =>
+    if kana_entry.val() is @word.kana
+      @kana_correct()
+      @rj_correct()
+    else
+      @wrong_input kana_entry.val()
+      
+  rj_entry.change () =>      
+    if rj_entry.val() is @word.meaning.toLowerCase()
+      # @kana_correct()
+      @rj_correct()
+    else
+      @wrong_input rj_entry.val()

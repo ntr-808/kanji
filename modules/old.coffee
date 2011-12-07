@@ -1,61 +1,34 @@
-_s = require 'underscore.string'
-
 $ ->
-  # Dates
-  @ms_per_day = 86400000
-  @departure = new Date (Date.UTC 2011, 08, 20, 0, 0, 0)
-  @now = Date.now()
-  @arrival = new Date (Date.UTC 2011, 10, 21, 9, 20, 0)
-  @pct = ((@now - @departure) / (@arrival - @departure))
+  list = $ '#words'
 
-  # Jquery
-  pct = $ '#pct'
-  days_left = $ '#days_left'
-  days_down = $ '#days_down'
-  gojira = $ '#gojira'
-  g_label = $ '#g_label'
-
-  # Updates
-  update_values = () =>
-    unless @now > @arrival
-      days_down_val = _s.truncate ((@now - @departure) / @ms_per_day), 5, ' '
-      days_left_val = _s.truncate ((@arrival - @now) / @ms_per_day), 5, ' '
-      days_down.text "Days Down: #{days_down_val}"
-      days_left.text "Days Left: #{days_left_val}"
-    else
-      days_down.text "Yeah for real."
-      days_left.text "すごいですね？"
-
-  update_pct = () => 
-    @now = Date.now()
-    unless @now > @arrival
-      @pct = ((@now - @departure) / (@arrival - @departure))
-      calculated = @pct * 100
-      rounded = (Math.round calculated * 10e6) / 10e6
-      pct.text "PCT: #{_s.pad rounded, 10, '0', 'right'}%"
-      g_label.text "#{_s.pad rounded, 10, '0', 'right'}%"
-    else
-      pct.text "I'm here lol..."
-
-  move_gman = () =>
-    destination = ($(window).width() * @pct) - 250
-    move("#gojira")
-      .x(destination)
-      .duration('2s')
-      .end()
-    move("#g_label")
-      .x(destination + 180)
-      .rotate(-20)
-      .duration('2s')
-      .end()
+  words =
+    1:
+      kanji: "図書館", kana: "としょかん", meaning: "library"
+    2:
+      kanji: "仕事", kana: "しごと", meaning: "work"
     
-  # Init
-  update_values()
-  move_gman()
+  for key, data of words
+    do (key, data) =>
+      word = $ "<div id=#{data.meaning}>言葉: #{data.kanji}</div>"
+      list.append word
+      kana_answer = $ """<input id="#{key}_answer_kana" placeholder="かな"/>"""
+      rj_answer = $ """<input id="#{key}_answer_rj" placeholder="Romaji"/>"""
 
-  r = Raphael 0, 0, $(window).width(), $(window).height()
-  p = r.path "M50, 337H#{($(window).width() - 50)}"
+      kana_correct = () =>
+        kana_answer.replaceWith $ """<div class="correct">#{data.kana}</div>"""
+      meaning_correct = () =>
+        rj_answer.replaceWith $ """<div class="correct">#{data.meaning}</div>"""
 
-  setInterval update_pct, 10
-  setInterval update_values, 1000
-  setInterval move_gman, 10000
+      kana_answer.change () =>
+        if kana_answer.val() is data.kana
+          kana_correct()
+          meaning_correct()
+          
+      rj_answer.change () =>      
+        if rj_answer.val() is data.meaning
+          kana_correct()
+          meaning_correct()
+          
+
+      list.append kana_answer
+      list.append rj_answer
