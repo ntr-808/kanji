@@ -1,0 +1,8 @@
+.correct {
+  text-shadow: 0 1px 1px #00bb22;
+}
+
+.wrong {
+  text-shadow: 0 1px 1px #FFFFFF;
+}
+
