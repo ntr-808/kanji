@@ -1,14 +1,14 @@
 $ ->
   list = $ '#words'
 
-  subject = $ "<div id='subject'></div>"
-  attempts = $ "<div id='attempts'></div>"
-  kana_entry = $ """<input id="kana_entry" placeholder="かな"/>"""
-  rj_entry = $ """<input id="rj_entry" placeholder="Meaning (Eng)"/>"""
-  rj_answer = $ "<div id='rj_answer'></div>"
-  kana_answer = $ "<div id='kana_answer'></div>"
-  rj_overlay = $ "<div id='rj_overlay'></div>"
-  kana_overlay = $ "<div id='kana_overlay'></div>"
+  subject = $ '#subject'
+  attempts = $ '#attempts'
+  kana_entry = $ '#kana_entry'
+  rj_entry = $ '#rj_entry'
+  rj_answer = $ '#rj_answer'
+  kana_answer = $ '#kana_answer'
+  rj_overlay = $ '#rj_overlay'
+  kana_overlay = $ '#kana_overlay'
 
   # test = $ "<span id='test'>|</span>"
 
@@ -103,7 +103,6 @@ $ ->
     
   keys = Object.keys words
 
-  body.append subject, kana_entry, rj_entry, kana_answer, rj_answer, attempts
   subject.hide()
   kana_answer.hide()
   rj_answer.hide()
