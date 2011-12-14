@@ -1,4 +1,15 @@
 $ ->
+  socket = io.connect null, reconnect: on, 'reconnection delay': 500, 'max reconnection attempts': 100
+
+  socket.on 'connect', () ->
+    console.log 'you are connected'
+    socket.emit 'request_word'
+
+  socket.on 'new_word', (word) =>
+    console.dir word
+    @word = word
+    @reset()
+
   list = $ '#words'
 
   subject = $ '#subject'
@@ -20,12 +31,12 @@ $ ->
     unless offset?
       element.css "left", "#{($(window).width() / 2) - (element.width() / 2)}px"
     else
-      console.log element.id, offset / 100
       element.css "left", "#{($(window).width() * (offset / 100)) - (element.width() / 2)}px"
 
   @reset = () =>
-    @word = words[keys[Math.floor(Math.random() * keys.length)]]
     @tries = 0
+    clearTimeout @hint
+    @hint = setTimeout (=> @rj_correct()), 10000
 
     attempts.fadeOut =>
       attempts.empty()
@@ -38,7 +49,7 @@ $ ->
 
     rj_answer.fadeOut =>
       rj_answer.removeClass()
-      rj_answer.text @word.meaning
+      rj_answer.text @word.rj
       @centre rj_answer, 75
 
 
@@ -46,7 +57,7 @@ $ ->
     rj_entry.val ''
     subject.fadeOut =>
       subject.removeClass()
-      subject.text @word.kanji
+      subject.text @word.kotoba
       subject.fadeIn()
       kana_entry.fadeIn()
       rj_entry.fadeIn()
@@ -62,7 +73,7 @@ $ ->
     kana_answer.fadeIn()
     kana_entry.fadeOut()
     @rj_correct()
-    setTimeout (=> @reset()), 1000
+    setTimeout (=> socket.emit 'request_word'), 2500
 
   @rj_correct = () =>
     rj_entry.fadeOut()
@@ -78,7 +89,7 @@ $ ->
     wrong.fadeIn()
     @centre attempts
 
-    if @tries is 3
+    if @tries is 2
       subject.addClass 'wrong'
       kana_answer.addClass 'wrong'
       kana_answer.fadeIn()
@@ -86,27 +97,20 @@ $ ->
       rj_entry.fadeOut()
       rj_answer.addClass 'wrong'
       rj_answer.fadeIn()
-      setTimeout (=> @reset()), 1000
+      setTimeout (=> socket.emit 'request_word'), 5000
 
   @rj_correct = () =>
     rj_entry.fadeOut()
     rj_answer.addClass 'correct'
     rj_answer.fadeIn()
-
-  words =
-    1:
-      kanji: "図書館", kana: "としょかん", meaning: "Library"
-    2:
-      kanji: "仕事", kana: "しごと", meaning: "Work"
-    3:
-      kanji: "行く", kana: "いく", meaning: 'To go'
-    
-  keys = Object.keys words
-
+  
   subject.hide()
   kana_answer.hide()
   rj_answer.hide()
-  @reset()
+  # @centre subject
+  @centre kana_entry, 25
+  @centre rj_entry, 75
+  @centre attempts
 
   kana_entry.change () =>
     if kana_entry.val() is @word.kana
@@ -115,9 +119,9 @@ $ ->
     else
       @wrong_input kana_entry.val()
       
-  rj_entry.change () =>      
-    if rj_entry.val() is @word.meaning.toLowerCase()
-      # @kana_correct()
-      @rj_correct()
-    else
-      @wrong_input rj_entry.val()
+  rj_entry.change () =>
+    if rj_entry.val().length > 3
+      if (@word.rj.toLowerCase().indexOf rj_entry.val()) > -1
+        @rj_correct()
+      else
+        @wrong_input rj_entry.val()

@@ -14,7 +14,7 @@ words = []
 mongoose.connection.on 'open', () =>
   console.log 'connected to db'
   csvp = csv()
-  csvp.fromPath(__dirname+'/data/verb_list')
+  csvp.fromPath(__dirname+'/verb_list')
   csvp.on 'data', (data, index) =>
     word = {kotoba: data[0], kana: data[1], rj: data[2]}
     words.push word
@@ -46,4 +46,4 @@ console.log 'listening on 1984...'
 @io = socket_io.listen server
 
 @io.sockets.on 'connection', (socket) =>
-  client = new Client socket: socket, words: words.shuffle()
+  client = new Client socket: socket, words: words
