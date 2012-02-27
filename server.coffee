@@ -30,10 +30,13 @@ verb_schema = new mongoose.Schema
   kotoba: String
   kana: String
   rj: String
-
 verb_model = mongoose.model 'verb', verb_schema
-
 verb_col = new mongoose.Collection 'verbs', db
+
+kanji_schema = new mongoose.Schema
+  kanji: String
+  onyomi: Array
+  kunyomi: Array
 
 server = connect()
 server.use connect.static "#{__dirname}/public"

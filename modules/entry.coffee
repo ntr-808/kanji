@@ -27,6 +27,10 @@ $ ->
 
   @tries = 0
 
+  @wrong_time = 5000
+  @correct_time = 2000
+  @hint_time = 10000
+
   @centre = (element, offset) =>
     unless offset?
       element.css "left", "#{($(window).width() / 2) - (element.width() / 2)}px"
@@ -36,7 +40,7 @@ $ ->
   @reset = () =>
     @tries = 0
     clearTimeout @hint
-    @hint = setTimeout (=> @rj_correct()), 10000
+    @hint = setTimeout (=> @rj_correct()), @hint_time
 
     attempts.fadeOut =>
       attempts.empty()
@@ -73,7 +77,7 @@ $ ->
     kana_answer.fadeIn()
     kana_entry.fadeOut()
     @rj_correct()
-    setTimeout (=> socket.emit 'request_word'), 2500
+    setTimeout (=> socket.emit 'request_word'), @correct_time
 
   @rj_correct = () =>
     rj_entry.fadeOut()
@@ -97,7 +101,7 @@ $ ->
       rj_entry.fadeOut()
       rj_answer.addClass 'wrong'
       rj_answer.fadeIn()
-      setTimeout (=> socket.emit 'request_word'), 5000
+      setTimeout (=> socket.emit 'request_word'), @wrong_time
 
   @rj_correct = () =>
     rj_entry.fadeOut()
