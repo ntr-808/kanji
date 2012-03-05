@@ -1,0 +1,30 @@
+{
+  "name": "vocab",
+  "description": "Because the ones that exist suck.",
+  "keywords": [
+    ""
+  ],
+  "version": "0.0.0",
+  "author": "Nathan Rashleigh",
+  "contributors": [
+    "Nathan Rashleigh <n.rashleigh@gmail.com>"
+  ],
+  "main": "server.coffee",
+  "dependencies": {
+    "browserify": "*",
+    "colors": "*",
+    "connect": "*",
+    "csv": "*",
+    "mongodb": "*",
+    "mongoose": "*",
+    "socket.io": "*",
+    "stylus": "*",
+    "underscore": "*",
+    "underscore.string": "*",
+    "zombie": "*"
+  },
+  "engines": {
+    "node": "~0.6",
+    "npm": "~1"
+  }
+}
