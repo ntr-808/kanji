@@ -1,4 +1,4 @@
-connect = require 'connect'
+express = require 'express'
 browserify = require 'browserify'
 mongoose = require 'mongoose'
 socket_io = require 'socket.io'
@@ -11,8 +11,8 @@ Array::shuffle = -> @sort -> 0.5 - Math.random()
 
 port = 1984
 
-server = connect.createServer()
-server.use connect.static "../public"
+server = express.createServer()
+server.use express.static "../public"
 server.use browserify mount: '/browserify.js', entry: "../client/entry.coffee"
 
 server.listen port, ->
@@ -21,8 +21,8 @@ server.listen port, ->
 io = socket_io.listen server
 
 io.sockets.on 'connection', (socket) =>
-  console.log 'hi'
-  # client = new Client socket: socket, words: words
+  # console.log 'hi'
+  client = new Client socket: socket, words: words
 
 #---------------------DB--------------------------
 

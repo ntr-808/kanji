@@ -13,7 +13,7 @@
   "dependencies": {
     "browserify": "*",
     "colors": "*",
-    "connect": "*",
+    "express": "*",
     "csv": "*",
     "mongodb": "*",
     "mongoose": "*",
